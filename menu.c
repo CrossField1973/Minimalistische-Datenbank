@@ -28,7 +28,7 @@ void watermark()
 	printf("1.) Display Current Database*\n");
 	printf("2.) Create new Entries\n");
 	printf("3.) Delete Entries\\\n");
-	printf("4.) Open Database-File\\\n");
+	printf("4.) Open Database-File*\n");
 	printf("5.) Export Current Database\\\n");
 	printf("6.) Sort Current Database by Kategory\\\n");
 	printf("7.) Exit Application\n");
@@ -83,6 +83,7 @@ void Main_Menu()
 			case 4:
 				system("cls");
 				readFile(pDatabase);
+				ausgabe(pDatabase);
 				
 				printf("\nPress enter to continue");
 				scanf("abc");
@@ -91,16 +92,13 @@ void Main_Menu()
 				
 			case 5:
 				system("cls");
-				printf("Case 05");
+				writeFile(pDatabase);
 				
-				printf("\nPress enter to continue");
-				scanf("abc");
-				fflush(stdin);
 				break;
 				
 			case 6:
 				system("cls");
-				Sort_Menu();
+				Sort_Menu(pDatabase);
 				
 				break;
 				
@@ -123,80 +121,4 @@ void Main_Menu()
 	}
 }
 
-void Sort_Menu()
-{
-	int input;
-	char kategory[80 + 1] = { };
-	char algorithm[80 + 1] = { };
-		
-	while(1)
-	{	
-		printf("Sort by Kategory Sub-Menu\n");
-	
-		printf("Selected Kategory to sort by : %s\n", kategory);
-		printf("Selected Sorting-Algorithm   : %s\n\n", algorithm);
-	
-		printf("1.) Sort by 'Name'\n");
-		printf("2.) Sort by 'Platform'\n");
-		printf("3.) Sort by 'Hours_played'\n");
-		printf("4.) Sort by Input_Order \n\n");
-		
-		printf("5.) Sort with Quick-Sort\n");
-		printf("6.) Sort with Bubble-Sort\n\n");
-
-		
-		printf("7.) Sort now\n\n");
-		
-		printf("8.) Return to Main Menu\n");
-	
-		printf("\nSelection: ");
-		scanf("%d", &input);
-		fflush(stdin);
-	
-		switch(input)
-		{		
-			case 1:
-				strcpy(kategory, "Name");
-				break;
-				
-			case 2:
-				strcpy(kategory, "Platform");
-				break;
-				
-			case 3:
-				strcpy(kategory, "Hours_played");
-				break;
-				
-			case 5:
-				strcpy(algorithm, "Quick-Sort");
-				break;
-				
-			case 6:
-				strcpy(algorithm, "Bubble-Sort");
-				break;
-				
-			case 7:
-				system("cls");
-				printf("Database Sorted by: with:");
-				
-				printf("\nPress enter to continue");
-				scanf("abc");
-				fflush(stdin);
-				break;
-				
-			case 8:
-				return;
-				break;
-				
-			default:
-				system("cls");
-				printf("Gib bitte eine Valide Eingabe ein");
-				break;
-		}
-		
-		
-		
-		system("cls");
-	}
-}
 
