@@ -8,7 +8,7 @@ void watermark()
 	printf("                          \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ \n");
 	printf("  -----------,-|           |C>   // )\\\\\\\\| \n");
 	printf("           ,','|          /    || ,'/////| 		//////////////////////////////////////////////////\n");
-	printf("---------,','  |         (,    ||   ///// 		//Ver. 0.4                                      //\n");
+	printf("---------,','  |         (,    ||   ///// 		//Ver. 1.03                                     //\n");
 	printf("         ||    |          \\\\  ||||//''''| 		//                                              //\n");
 	printf("         ||    |           |||||||     _| 		//                                              //\n");
 	printf("         ||    |______      `````\\____/ \\ 		//                                              //\n");
@@ -25,13 +25,14 @@ void watermark()
 	
 	printf("\n");
 	
-	printf("1.) Display Current Database*\n");
-	printf("2.) Create new Entries\n");
-	printf("3.) Delete Entries\\\n");
-	printf("4.) Open Database-File*\n");
-	printf("5.) Export Current Database\\\n");
-	printf("6.) Sort Current Database by Kategory\\\n");
-	printf("7.) Exit Application\n");
+	printf("1.) Datenbank anzeigen\n");
+	printf("2.) Neue Eintr\x84ge erstellen\n");
+	printf("3.) Eintr\x84ge l\x94schen\n");
+	printf("4.) Datenbank von Datei importieren\n");
+	printf("5.) Datenbank in  Datei exportieren\n");
+	printf("6.) Datenbank nach Kategorie sortieren\n");
+	printf("7.) Zeiger anzeigen\n");
+	printf("8.) Anwendung beenden\n");
 }
 
 void Main_Menu()
@@ -43,12 +44,13 @@ void Main_Menu()
     pDatabase->start = 0;
     pDatabase->zwischen = 0;
 	int input;	
+	int numoutput = 25;
 	
 	while(1)
 	{
 		watermark();
 		
-		printf("\nSelection: ");
+		printf("\nAuswahl: ");
 		scanf("%d", &input);
 		fflush(stdin);
 		
@@ -56,44 +58,40 @@ void Main_Menu()
 		{		
 			case 1:
 				system("cls");
-				ausgabe(pDatabase);
-				
-				printf("\nPress enter to continue");
-				scanf("abc");
-				fflush(stdin);
+				Output_Menu(pDatabase, numoutput);
 				break;
 				
 			case 2:
 				system("cls");
-				CreateEntries(pDatabase);
+				Create_Entries(pDatabase);
 				
-				printf("\nPress enter to continue");
+				printf("\nDr\x81""cke Enter um fortzufahren");
 				scanf("abc");
 				fflush(stdin);
 				break;
 				
 			case 3:
-				up_loesche(pDatabase);
-				
-				printf("\nPress enter to continue");
-				scanf("abc");
-				fflush(stdin);
+				delete(pDatabase);
+			
 				break;
 				
 			case 4:
 				system("cls");
-				readFile(pDatabase);
-				ausgabe(pDatabase);
+				Read_File(pDatabase);
+				output(pDatabase);
 				
-				printf("\nPress enter to continue");
+				printf("\nDr\x81""cke Enter um fortzufahren");
 				scanf("abc");
 				fflush(stdin);
 				break;
 				
 			case 5:
 				system("cls");
-				writeFile(pDatabase);
+				Write_File(pDatabase);
 				
+				printf("Dr\x81""cke Enter um fortzufahren");
+				scanf("abc");
+				fflush(stdin);
 				break;
 				
 			case 6:
@@ -103,6 +101,15 @@ void Main_Menu()
 				break;
 				
 			case 7:
+				system("cls");
+				hex(pDatabase);
+				printf("\n\nDr\x81""cke Enter um fortzufahren");
+				scanf("abc");
+				fflush(stdin);
+				
+				break;
+				
+			case 8:
 				return;
 				
 				break;
@@ -111,7 +118,7 @@ void Main_Menu()
 				system("cls");
 				printf("Gib bitte eine Valide Eingabe ein");
 				
-				printf("\nPress enter to continue");
+				printf("\nDr\x81""cke Enter um fortzufahren");
 				scanf("abc");
 				fflush(stdin);
 				break;
@@ -122,3 +129,78 @@ void Main_Menu()
 }
 
 
+void Sort_Menu(Games_Database* pDatabase)
+{
+	int input;
+	char category[12 + 1] = { };
+	char algorithm[12 + 1] = { };
+		
+	while(1)
+	{	
+		printf("Sortier-Untermen\x81\n");
+	
+		printf("Nach dieser Kategorie soll sortiert werden : %s\n", category);
+		printf("Mit diesem Sortier-Algorithmus soll sortiert werden : %s\n\n", algorithm);
+	
+		printf("1.) Nach 'Namen' sortieren\n");
+		printf("2.) Nach 'Platform' sortieren\n");
+		printf("3.) Nach 'Spielstunden' sortieren\n\n");
+		
+		printf("4.) Mit dem Quick-Sort sortieren\n");
+		printf("5.) Mit dem Bubble-Sort sortieren\n\n");
+
+		
+		printf("6.) Jetzt sortieren\n\n");
+		
+		printf("7.) Zum Hauptmen\x81 zur\x81""ckkehren\n");
+	
+		printf("\nAuswahl: ");
+		scanf("%d", &input);
+		fflush(stdin);
+	
+		switch(input)
+		{		
+			case 1:
+				strcpy(category, "Name");
+				break;
+				
+			case 2:
+				strcpy(category, "Platform");
+				break;
+				
+			case 3:
+				strcpy(category, "Spielstunden");
+				break;
+				
+			case 4:
+				strcpy(algorithm, "Quick-Sort");
+				break;
+				
+			case 5:
+				strcpy(algorithm, "Bubble-Sort");
+				break;
+				
+			case 6:
+				system("cls");
+				Sort_Logic(pDatabase, algorithm, category);
+				
+				printf("\nDr\x81""cke Enter um fortzufahren");
+				scanf("abc");
+				fflush(stdin);
+				break;
+				
+			case 7:
+				return;
+				break;
+				
+			default:
+				system("cls");
+				printf("Gib bitte eine Valide Eingabe ein");
+				break;
+		}
+		
+		
+		
+		system("cls");
+	}
+}

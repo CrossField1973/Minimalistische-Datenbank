@@ -2,7 +2,7 @@
 
 
 
-void CreateEntries(Games_Database* pDatabase)
+void Create_Entries(Games_Database* pDatabase)
 {
 	//Lies Eintrag ein
 	
@@ -36,7 +36,7 @@ void CreateEntries(Games_Database* pDatabase)
 	    fflush(stdin);
 	    
 
-        up_listeAdd(pDatabase);
+        Liste_Add(pDatabase);
 	}
 	
 	printf("\nDatensatz erfolgreich hinzugefügt!");
@@ -44,10 +44,10 @@ void CreateEntries(Games_Database* pDatabase)
 
 
 
-void up_listeAdd(Games_Database* pDatabase)
+void Liste_Add(Games_Database* pDatabase)
 {
     pDatabase->mom = (Game*)malloc(sizeof(Game));
-    up_struct_liste(pDatabase);
+    Struct_Liste(pDatabase);
     pDatabase->mom->davor = pDatabase->zwischen;
     pDatabase->mom->danach = 0;
     
@@ -64,148 +64,180 @@ void up_listeAdd(Games_Database* pDatabase)
     pDatabase->zwischen = pDatabase->mom;
 }
 
-void up_struct_liste(Games_Database* pDatabase)
+void Struct_Liste(Games_Database* pDatabase)
 {
     strcpy(pDatabase->mom->name, pDatabase->name);
     strcpy(pDatabase->mom->konsole, pDatabase->konsole);
     pDatabase->mom->spielStunden = pDatabase->spielStunden;
     
-    if((strcmp(pDatabase->completed, "Ja") == 0) || (strcmp(pDatabase->completed, "ja") == 0))
+    if((strcmp(pDatabase->completed, "Ja") == 0) || (strcmp(pDatabase->completed, "ja") == 0) || (strcmp(pDatabase->completed, "completed") == 0))
 	{
 		strcpy(pDatabase->mom->completed, "completed");
 	}
-	else if((strcmp(pDatabase->completed, "Nein") == 0) || (strcmp(pDatabase->completed, "nein") == 0))
+	else if((strcmp(pDatabase->completed, "Nein") == 0) || (strcmp(pDatabase->completed, "nein") == 0) || (strcmp(pDatabase->completed, "uncompleted") == 0))
 	{
 		strcpy(pDatabase->mom->completed, "uncompleted");
 	}
 }
 
-void up_hex(Games_Database* pDatabase)
+void hex(Games_Database* pDatabase)
 {
     pDatabase->mom = pDatabase->start;
     while(pDatabase->mom)
     {
-        printf("\n--%15s-- %12X %12X %12X", pDatabase->mom->name, pDatabase->mom->davor, pDatabase->mom, pDatabase->mom->danach);
+        printf("\n%30s %12X %12X %12X", pDatabase->mom->name, pDatabase->mom->davor, pDatabase->mom, pDatabase->mom->danach);
         pDatabase->mom = pDatabase->mom->danach;
     }
 }
 
-void up_loesche(Games_Database* pDatabase)
+void delete(Games_Database* pDatabase)
 {
 	system("cls");
 	
+	//Kein Datensatz
+    if(!pDatabase->mom)
+    {
+        printf("Erstell erstmal nen Datensatz\n");
+        
+        return;
+    }
+	
     int i = 1;
     int eingabe;
+    int von;
+    int von2;
+    int bis;
 
-    ausgabe(pDatabase);
-    printf("Wählen sie bitte den zu lÃ¶schenden Datensatz aus\n");
-    fflush(stdin);
+    output(pDatabase);
+    printf("W\x84hlen sie bitte den zu l\x94schenden Datensatz aus\n");
+    printf("W\x84hlen sie die '0', um mehrfach zu l\x94schen\n");
     scanf("%d", &eingabe);
     fflush(stdin);
 
-    pDatabase->mom = pDatabase->start;
-    while(pDatabase->mom && i++ < eingabe)
-    {
-        pDatabase->mom = pDatabase->mom->danach;
-    }
+	if(eingabe == 0)
+	{
+		system("cls");
+		printf("Von: ");
+		scanf("%d", &von);
+		printf("\nBis: ");
+		scanf("%d", &bis);
+		
+		von2 = von;		
+	
+   		//Fallunterscheidung
 
-    //Fallunterscheidung
-
-    //Kein Datensatz
-    if(pDatabase->mom)
-    {
-        printf("Erstell erstmal nen Datensatz\n");
-    }
-
-    //Mitte
-    if(pDatabase->mom->danach && pDatabase->mom->davor)
-    {
-        pDatabase->mom->davor->danach = pDatabase->mom->danach;
-        pDatabase->mom->danach->davor = pDatabase->mom->davor;
-        free(pDatabase->mom);
-        pDatabase->mom = pDatabase->start;
-    }
-
-    //Ende
-    if(pDatabase->mom->davor)
-    {
-        pDatabase->mom->davor->danach = 0;
-        free(pDatabase->mom);
-        pDatabase->mom = pDatabase->start;
-    }
-
-    //Anfang
-    if(pDatabase->mom->danach)
-    {
-        pDatabase->mom->danach->davor = 0;
-        free(pDatabase->mom);
-        pDatabase->mom = pDatabase->start;
-    }
-
-    //Einzigste
-    else
-    {
-        printf("Liste ist jetzt leer\n");
-    }
-}
-
-//Bestimmte anzahl anzeigen
-void ausgabe(Games_Database* pDatabase)
-{
-    pDatabase->mom = pDatabase->start;
-
-    //Print alle - letztes
-
-    //Wenn es keine Datensätze gibt
-    if(!pDatabase->mom)
-    {
-        printf("Erstell erst mal eine Datenbank\n");
-    }
-
-    //Es gibt nur eines
-    else if(!pDatabase->mom->danach)
-    {
-        //print mom
-        
-        tableDesign();
-        printf("%20s %10s %12.2f %13s\n\n", pDatabase->mom->name, pDatabase->mom->konsole, pDatabase->mom->spielStunden, pDatabase->mom->completed);
-    }
+		while(von <= bis)
+		{
+			i = 1;
+			pDatabase->mom = pDatabase->start;
+    		while(pDatabase->mom && i++ < von2)
+    		{
+    	    	pDatabase->mom = pDatabase->mom->danach;
+    		}
+			
+    		//Mitte
+    		if(pDatabase->mom->danach && pDatabase->mom->davor)
+	    	{
+	    	    pDatabase->mom->davor->danach = pDatabase->mom->danach;
+	    	    pDatabase->mom->danach->davor = pDatabase->mom->davor;
+	    	    free(pDatabase->mom);
+	    	    pDatabase->mom = pDatabase->start;
+	    	}
+	
+    		//Ende
+    		else if(pDatabase->mom->davor)
+    		{
+    		    pDatabase->mom->davor->danach = 0;
+    		    free(pDatabase->mom);
+    		    pDatabase->mom = pDatabase->start;
+    		}
+		
+		    //Anfang
+		    else if(pDatabase->mom->danach)
+		    {
+		        pDatabase->mom->danach->davor = 0;
+		        pDatabase->start = pDatabase->mom->danach;
+		        free(pDatabase->mom);
+		        pDatabase->mom = pDatabase->start;
+		    }
+		
+	    	//Einzigste
+	    	else
+	    	{
+	    		free(pDatabase->mom);
+	    		pDatabase->mom = 0;
+	    		pDatabase->start = 0;
+	    		pDatabase->zwischen = 0;
+	    	    printf("Liste ist jetzt leer\n");
+	    	}
+	    	
+	    	von++;
+		}
+		printf("Eintr\x84ge erfolgreich gel\x94scht");
+	}
 
 	else
 	{
-		//Mitte
-		
-		tableDesign();
-    	while(pDatabase->mom->danach)
+    	pDatabase->mom = pDatabase->start;
+    	while(pDatabase->mom && i++ < eingabe)
     	{
-    	    //print mom
-    	    printf("%20s %10s %12.2f %13s\n\n", pDatabase->mom->name, pDatabase->mom->konsole, pDatabase->mom->spielStunden, pDatabase->mom->completed);
     	    pDatabase->mom = pDatabase->mom->danach;
-
     	}
 
-    	//Print Letztes (mom)
-    	printf("%20s %10s %12.2f %13s\n\n", pDatabase->mom->name, pDatabase->mom->konsole, pDatabase->mom->spielStunden, pDatabase->mom->completed);
+	    //Fallunterscheidung
+	
+	
+	    //Mitte
+	    if(pDatabase->mom->danach && pDatabase->mom->davor)
+	    {
+	        pDatabase->mom->davor->danach = pDatabase->mom->danach;
+	        pDatabase->mom->danach->davor = pDatabase->mom->davor;
+	        free(pDatabase->mom);
+	        pDatabase->mom = pDatabase->start;
+	        printf("Eintrag erfolgreich gel\x94scht");
+	    }
+	
+	    //Ende
+	    else if(pDatabase->mom->davor)
+	    {
+	        pDatabase->mom->davor->danach = 0;
+	        free(pDatabase->mom);
+	        pDatabase->mom = pDatabase->start;
+	        printf("Eintrag erfolgreich gel\x94scht");
+	    }
+	
+	    //Anfang
+	    else if(pDatabase->mom->danach)
+	    {
+	        pDatabase->mom->danach->davor = 0;
+	        pDatabase->start = pDatabase->mom->danach;
+	        free(pDatabase->mom);
+	        pDatabase->mom = pDatabase->start;
+	        printf("Eintrag erfolgreich gel\x94scht");
+	    }
+	
+    	//Einzigste
+    	else
+    	{
+    		free(pDatabase->mom);
+    		pDatabase->mom = 0;
+    		pDatabase->start = 0;
+    		pDatabase->zwischen = 0;
+    	    printf("Liste ist jetzt leer");
+   		}
 	}
+	printf("\n\nDr\x81""cke Enter um fortzufahren");
+	scanf("abc");
+	fflush(stdin);
 }
 
-void printPointers(Games_Database* pDatabase)
+void Table_Design()
 {
-	printf("%x       start\n", pDatabase->start);
-    printf("%x       mom\n", pDatabase->mom);
-    printf("%x       zwischen\n", pDatabase->zwischen);
-    printf("%x       danach\n", pDatabase->mom->danach);
-    printf("%x       davor\n", pDatabase->mom->davor);
-    scanf("abc");
+	printf(" Nr.                    Game Titel    Konsole Spielstunden  durchgezockt\n");
+	printf("-----------------------------------------------------------------------\n\n");
 }
 
-void tableDesign()
-{
-	printf("          Game Title    Konsole Spielstunden  durchgezockt\n");
-	printf("----------------------------------------------------------\n\n");
-}
-
-void readFile(Games_Database* pDatabase)
+void Read_File(Games_Database* pDatabase)
 {
 	FILE* einlesen;
     char text[100 + 1];
@@ -218,9 +250,7 @@ void readFile(Games_Database* pDatabase)
 	int index = 0;
 	
 	
-	printf("Bitte geben sie den vollst?ndigen Dateipfad mit Dateiendung an.\n");
-	printf("1. Die Dateiendung muss vorhanden sein (z.B. '.txt').\n");
-	printf("2. Einfache Backslash(\\) m?ssen mit Doppelten(\\\\) erstetzt werden.\n");
+	printf("Bitte geben sie den vollst\x84ndigen Dateipfad mit Dateiendung an.\n");
 	scanf("%[^\n]%*c", file_path);
 	fflush(stdin);
 	system("cls");
@@ -237,13 +267,18 @@ void readFile(Games_Database* pDatabase)
     {
         fgets(text, 100, einlesen);
         
+        while((text[0] =='*') && (text[1] =='*') && (text[2] =='*'))
+        {
+        	fgets(text, 100, einlesen);
+		}
+        
         strcpy(original, text);
         
         while(!feof(einlesen))
         {
         	//Während du noch nicht am Ende des Strings bist
         	while(counter <= 100)
-        	{
+        	{	
         		//Wenn du ein Doppel-Leerzeichen gefunden hast
         		if((text[counter] == ' ') && (text[counter + 1] == ' '))
         		{	
@@ -273,10 +308,15 @@ void readFile(Games_Database* pDatabase)
 					else if(index == 2)
 					{
 						completed = counter;
+						while(original[counter] != 'd')
+						{
+							counter++;
+						}
+						counter++;
+						original[counter] = '\0';
 					}
 					
 					index++;
-					strcpy(text, text + counter);
 						
 					
 				}			
@@ -285,11 +325,11 @@ void readFile(Games_Database* pDatabase)
 			index = 0;
         
             strcpy(pDatabase->name, original);
-            strcpy(pDatabase->konsole, original + konsole);
-            pDatabase->spielStunden = atoi(original + spielStunden);
-            strcpy(pDatabase->completed, original + completed);
+        	strcpy(pDatabase->konsole, original + konsole);
+        	pDatabase->spielStunden = atoi(original + spielStunden);
+        	strcpy(pDatabase->completed, original + completed);
             
-            up_listeAdd(pDatabase);
+    		Liste_Add(pDatabase);
             
 
             fgets(text, 80, einlesen);
@@ -300,7 +340,7 @@ void readFile(Games_Database* pDatabase)
         }
         
         //Während du noch nicht am Ende des Strings bist
-        while(counter <= 80)
+        while(counter <= 100)
         {
         	//Wenn du ein Doppel-Leerzeichen gefunden hast
         	if((text[counter] == ' ') && (text[counter + 1] == ' '))
@@ -331,10 +371,15 @@ void readFile(Games_Database* pDatabase)
 				else if(index == 2)
 				{
 					completed = counter;
+					while(original[counter] != 'd')
+					{
+						counter++;
+					}
+					counter++;
+					original[counter] = '\0';
 				}
 				
-				index++;
-				strcpy(text, text + counter);	
+				index++;	
 				
 			}			
 			counter++;
@@ -345,17 +390,19 @@ void readFile(Games_Database* pDatabase)
         pDatabase->spielStunden = atoi(original + spielStunden);
         strcpy(pDatabase->completed, original + completed);
             
-    	up_listeAdd(pDatabase);
+    	Liste_Add(pDatabase);
 
         fclose(einlesen);
     }	
 }
 
-void writeFile(Games_Database* pDatabase)
+void Write_File(Games_Database* pDatabase)
 {
 	FILE *fptr;
 	char file_path[80 + 1];
 	char str[5 + 1];
+	int i;
+	int length;
 		
 	printf("Bitte gebe den Dateipfad ein\n");
 	scanf("%s", file_path);
@@ -365,7 +412,7 @@ void writeFile(Games_Database* pDatabase)
 	
 	if (fptr == NULL) 
 	{
-	    printf("Error opening file.\n");
+	    printf("Datei konnte nicht geöffnet werden.\n");
 	}
 	
 	else
@@ -382,43 +429,83 @@ void writeFile(Games_Database* pDatabase)
 			while(pDatabase->mom->danach != 0)
 			{
 				fputs(pDatabase->mom->name, fptr);
-				//print spaces
+				length = 30 - strlen(pDatabase->mom->name);
+				for(i = 0; i < length; i++)
+				{
+					fputs(" ", fptr);
+				}
+				
 				fputs(pDatabase->mom->konsole, fptr);
-				//print spaces
+				length = 10 - strlen(pDatabase->mom->konsole);
+				for(i = 0; i < length; i++)
+				{
+					fputs(" ", fptr);
+				}
+				
 				itoa(pDatabase->mom->spielStunden, str, 10);
 				fputs(str, fptr);
-				//print spaces
+				length = 15 - strlen(str);
+				for(i = 0; i < length; i++)
+				{
+					fputs(" ", fptr);
+				}
+
 				fputs(pDatabase->mom->completed, fptr);
-				//print spaces
+				length = 13 - strlen(pDatabase->mom->completed);
+				for(i = 0; i < length; i++)
+				{
+					fputs(" ", fptr);
+				}
+
 				fputs("\n", fptr);
 				
 				pDatabase->mom = pDatabase->mom->danach;
 			}
 			
 			fputs(pDatabase->mom->name, fptr);
+			length = 30 - strlen(pDatabase->mom->name);
+			for(i = 0; i < length; i++)
+			{
+				fputs(" ", fptr);
+			}
+			
 			fputs(pDatabase->mom->konsole, fptr);
+			length = 10 - strlen(pDatabase->mom->konsole);
+			for(i = 0; i < length; i++)
+			{
+				fputs(" ", fptr);
+			}
+			
 			itoa(pDatabase->mom->spielStunden, str, 10);
 			fputs(str, fptr);
-				
-			printf("Datenbank wurde erfolgreich in Datei geschrieben");
+			length = 15 - strlen(str);
+			for(i = 0; i < length; i++)
+			{
+				fputs(" ", fptr);
+			}
+
+			fputs(pDatabase->mom->completed, fptr);
+			length = 13 - strlen(pDatabase->mom->completed);
+			for(i = 0; i < length; i++)
+			{
+				fputs(" ", fptr);
+			}
 		}
 	}
 	fclose(fptr);
 	
-	printf("\n\nPress enter to continue");
-	scanf("abc");
-	fflush(stdin);
+	printf("Datenbank wurde erfolgreich in Datei exportiert\n\n");
 }
 
-void Sort_Logic(char kategory[12 + 1], char algorithm[12 + 1], Games_Database* pDatabase)
+void Sort_Logic(Games_Database* pDatabase, char algorithm[12 + 1], char category[12 + 1])
 {
 	int size = 0;
 	int i;
 	
-	if(kategory == 0 || algorithm == 0)
+	if(category == 0 || algorithm == 0)
 	{
-		printf("Du musst zuerst den Sortieralgorithmus und die Kategorie, \nnach der Sortiert werden soll eingeben.\n\n");
-		printf("\nPress enter to continue");
+		printf("Du musst zuerst den Sortieralgorithmus und die Kategorie, \nnach der sortiert werden soll eingeben.\n\n");
+		printf("\nDr\x81""cke Enter um fortzufahren");
 		scanf("abc");
 		fflush(stdin);
 		
@@ -429,7 +516,7 @@ void Sort_Logic(char kategory[12 + 1], char algorithm[12 + 1], Games_Database* p
 	{
 		printf("Erstell erstmal eine Datenbank\n\n");
 		
-		printf("Press enter to continue");
+		printf("Dr\x81""cke Enter um fortzufahren");
 		scanf("abc");
 		fflush(stdin);
 		
@@ -443,19 +530,20 @@ void Sort_Logic(char kategory[12 + 1], char algorithm[12 + 1], Games_Database* p
 		size++;
 		pDatabase->mom = pDatabase->mom->danach;
 	}
-	size = size + 2;
 	
 	//Quick-Sort
 	if(strcmp(algorithm, "Quick-Sort") == 0)
 	{
-		if(strcmp(kategory, "Hours_played") == 0)
+		if(strcmp(category, "Spielstunden") == 0)
 		{
-			quickSortieren(pDatabase, 0, size - 1);
+			Quick_Sort(pDatabase, 1, size + 1);
+			printf("Datenbank erfolgreich sortiert\n");
 		}
 		
-		else if(strcmp(kategory, "Platform") == 0 || strcmp(kategory, "Name") == 0)
+		else if(strcmp(category, "Platform") == 0 || strcmp(category, "Name") == 0)
 		{
-			quickSortierenNamen(pDatabase, 0, size - 1, kategory);
+			Quick_Sort_Names(pDatabase, 1, size + 1, category);
+			printf("Datenbank erfolgreich sortiert\n");
 		}
 		
 
@@ -464,25 +552,22 @@ void Sort_Logic(char kategory[12 + 1], char algorithm[12 + 1], Games_Database* p
 	//Bubble-Sort
 	if(strcmp(algorithm, "Bubble-Sort") == 0)
 	{
-		if(strcmp(kategory, "Hours_played") == 0)
-		{
-			
+		if(strcmp(category, "Spielstunden") == 0)
+		{	
+			Bubble_Sortieren(pDatabase,size - 1);
+			printf("Datenbank erfolgreich sortiert\n");
 		}
 		
-		if(strcmp(kategory, "Platform") == 0)
+		if(strcmp(category, "Platform") == 0 || strcmp(category, "Name") == 0)
 		{
-			
-		}
-		
-		if(strcmp(kategory, "Name") == 0)
-		{
-			
+			Bubble_Sortieren_Namen(pDatabase,size - 1, category);
+			printf("Datenbank erfolgreich sortiert\n");
 		}
 	}
 }
 
 /*----------------Quick Sort--------------*/
-void quickSortierenNamen(Games_Database* pDatabase, int links, int rechts, char kategory[80 + 1])
+void Quick_Sort_Names(Games_Database* pDatabase, int left, int right, char category[80 + 1])
 {
 	int iLi, iRe, med;
 	int i;
@@ -492,21 +577,21 @@ void quickSortierenNamen(Games_Database* pDatabase, int links, int rechts, char 
 	Game* tmp1;
 	Game* tmp2;
 	
-	iLi = links;
-	iRe = rechts;
+	iLi = left;
+	iRe = right;
 
-	med = (links + rechts) / 2;
+	med = (left + right) / 2;
 	
 	
 	while(iLi < iRe)
-	{
+	{	
 		pDatabase->mom = pDatabase->start;
 		for(i = 1; i < med; i++)
 		{
 			pDatabase->mom = pDatabase->mom->danach;
 		}
 		
-		if(strcmp(kategory, "Platform") == 0)
+		if(strcmp(category, "Platform") == 0)
 		{
 			strcpy(buffer, pDatabase->mom->konsole);
 			//
@@ -537,7 +622,7 @@ void quickSortierenNamen(Games_Database* pDatabase, int links, int rechts, char 
 			}
 		}
 		
-		else if(strcmp(kategory, "Name") == 0)
+		else if(strcmp(category, "Name") == 0)
 		{	
 			strcpy(buffer, pDatabase->mom->name);
 			//
@@ -568,9 +653,9 @@ void quickSortierenNamen(Games_Database* pDatabase, int links, int rechts, char 
 			}
 		}
 		
+		//Tausche (feld[iLi], feld[iRe])		
+		Swap_Entries(pDatabase, iLi, iRe);
 		
-		//Tausche (feld[iLi], feld[iRe])
-		swapIt(iLi, iRe, pDatabase);
 		
 		
 		if		(iLi == med)	med = iRe;
@@ -582,95 +667,21 @@ void quickSortierenNamen(Games_Database* pDatabase, int links, int rechts, char 
 		
 	}
 	
-	if(links < med - 1)
+	if(left < med - 1)
 	{
-		quickSortierenNamen(pDatabase, links, med - 1, kategory);
+		Quick_Sort_Names(pDatabase, left, med - 1, category);
 	}
 	
-	if(rechts > med + 1)
+	if(right > med + 1)
 	{
-		quickSortierenNamen(pDatabase, med + 1, rechts, kategory);
+		Quick_Sort_Names(pDatabase, med + 1, right, category);
 	}
 }
 /*----------------------------------------*/
 
-void Sort_Menu(Games_Database* pDatabase)
-{
-	int input;
-	char kategory[12 + 1] = { };
-	char algorithm[12 + 1] = { };
-		
-	while(1)
-	{	
-		printf("Sort by Kategory Sub-Menu\n");
-	
-		printf("Selected Kategory to sort by : %s\n", kategory);
-		printf("Selected Sorting-Algorithm   : %s\n\n", algorithm);
-	
-		printf("1.) Sort by 'Name'\n");
-		printf("2.) Sort by 'Platform'\n");
-		printf("3.) Sort by 'Hours_played'\n");
-		
-		printf("4.) Sort with Quick-Sort\n");
-		printf("5.) Sort with Bubble-Sort\n\n");
 
-		
-		printf("6.) Sort now\n\n");
-		
-		printf("7.) Return to Main Menu\n");
-	
-		printf("\nSelection: ");
-		scanf("%d", &input);
-		fflush(stdin);
-	
-		switch(input)
-		{		
-			case 1:
-				strcpy(kategory, "Name");
-				break;
-				
-			case 2:
-				strcpy(kategory, "Platform");
-				break;
-				
-			case 3:
-				strcpy(kategory, "Hours_played");
-				break;
-				
-			case 4:
-				strcpy(algorithm, "Quick-Sort");
-				break;
-				
-			case 5:
-				strcpy(algorithm, "Bubble-Sort");
-				break;
-				
-			case 6:
-				system("cls");
-				Sort_Logic(kategory, algorithm, pDatabase);
-				
-				printf("\nPress enter to continue");
-				scanf("abc");
-				fflush(stdin);
-				break;
-				
-			case 7:
-				return;
-				break;
-				
-			default:
-				system("cls");
-				printf("Gib bitte eine Valide Eingabe ein");
-				break;
-		}
-		
-		
-		
-		system("cls");
-	}
-}
 
-void setMomToSelected(Games_Database* pDatabase, int position)
+void Set_Mom_To_Selected(Games_Database* pDatabase, int position)
 {
 	int i;
 	pDatabase->mom = pDatabase->start;
@@ -681,50 +692,17 @@ void setMomToSelected(Games_Database* pDatabase, int position)
 	
 }
 
-void swapIt(int left, int right, Games_Database* pDatabase)
-{
-	Game* rightEntry;
-	Game* leftEntry;
-	
-	
-	setMomToSelected(pDatabase, left);
-	leftEntry = pDatabase->mom;
-	
-	setMomToSelected(pDatabase, right);
-	rightEntry = pDatabase->mom;
-	
-	char  tmpName[80 + 1];
-	char  tmpKonsole[80 + 1];
-	float tmpspielStunden;
-	char tmpCompleted[80 + 1];
-	
-	strcpy(tmpName, leftEntry->name);
-	strcpy(tmpKonsole, leftEntry->konsole);
-	tmpspielStunden = leftEntry->spielStunden;
-	strcpy(tmpCompleted, leftEntry->completed);
-	
-	strcpy(leftEntry->name, rightEntry->name);
-	strcpy(leftEntry->konsole, rightEntry->konsole);
-	leftEntry->spielStunden = rightEntry->spielStunden;
-	strcpy(leftEntry->completed, rightEntry->completed);
-	
-	strcpy(rightEntry->name, tmpName);
-	strcpy(rightEntry->konsole, tmpKonsole);
-	rightEntry->spielStunden = tmpspielStunden;
-	strcpy(rightEntry->completed, tmpCompleted);
-}
-
 /*----------------Quick Sort--------------*/
-void quickSortieren(Games_Database* pDatabase, int links, int rechts)
+void Quick_Sort(Games_Database* pDatabase, int left, int right)
 {
 	int iLi, iRe, med;
 	float buffer;
 	int i;
 	
-	iLi = links;
-	iRe = rechts;
+	iLi = left;
+	iRe = right;
 
-	med = (links + rechts) / 2;
+	med = (left + right) / 2;
 	
 	while(iLi < iRe)
 	{
@@ -762,7 +740,7 @@ void quickSortieren(Games_Database* pDatabase, int links, int rechts)
 		}
 		
 		//Tausche (feld[iLi], feld[iRe])
-		swapIt(iLi, iRe, pDatabase);
+		Swap_Entries(pDatabase, iLi, iRe);
 		
 		if		(iLi == med)	med = iRe;
 		else if	(iRe == med)	med = iLi;
@@ -773,15 +751,445 @@ void quickSortieren(Games_Database* pDatabase, int links, int rechts)
 		
 	}
 	
-	if(links < med - 1)
+	if(left < med - 1)
 	{
-		quickSortieren(pDatabase, links, med - 1);
+		Quick_Sort(pDatabase, left, med - 1);
 	}
 	
-	if(rechts > med + 1)
+	if(right > med + 1)
 	{
-		quickSortieren(pDatabase, med + 1, rechts);
+		Quick_Sort(pDatabase, med + 1, right);
 	}
 }
 /*----------------------------------------*/
+
+
+void Output_Menu(Games_Database* pDatabase,int numOutput)
+{
+	pDatabase->mom = pDatabase->start;
+	int input;
+	int i;
+    //Print alle - letztes
+
+    //Wenn es keine Datensätze gibt
+    if(!pDatabase->mom)
+    {
+        printf("Erstell erst mal eine Datenbank\n\n");
+        
+        printf("Dr\x81""cke Enter um fortzufahren");
+        scanf("abc");
+        fflush(stdin);
+    }
+
+    //Es gibt nur eines
+    else if(!pDatabase->mom->danach)
+    {
+        //print mom
+        
+        Table_Design();
+        printf("%30s %10s %12.2f %13s\n\n", pDatabase->mom->name, pDatabase->mom->konsole, pDatabase->mom->spielStunden, pDatabase->mom->completed);
+    }
+
+	else
+	{
+		while(1)
+		{
+			//Mitte
+			pDatabase->mom = pDatabase->start;
+			i = 0;
+			
+			Table_Design();
+			
+    		while((pDatabase->mom->danach) && (i < numOutput - 1))
+    		{
+    		   	//print mom
+    		    printf("%3d %30s %10s %12.2f %13s\n\n",i + 1,  pDatabase->mom->name, pDatabase->mom->konsole, pDatabase->mom->spielStunden, pDatabase->mom->completed);
+    		    pDatabase->mom = pDatabase->mom->danach;
+    		    i++;  
+    		}
+    		//Print Letztes (mom)
+    		printf("%3d %30s %10s %12.2f %13s\n\n", i + 1, pDatabase->mom->name, pDatabase->mom->konsole, pDatabase->mom->spielStunden, pDatabase->mom->completed);
+    		
+    		printf("\nAnzahl angezeigter Elemente: %d\n", numOutput);
+    		printf("1) Wollen sie die Anzahl der gezeigen Elemente \x84ndern?\n");
+    		printf("2) Zum Hauptmen\x81 zur\x81""ckkehren.\n");
+    		
+    		scanf("%d", &input);
+    		fflush(stdin);
+    		
+    		if(input == 1)
+    		{
+    			system("cls");
+    			printf("Wie viele Elemente wollen sie anzeigen: ");
+    			scanf("%d", &input);
+    			fflush(stdin);
+    			numOutput = input;
+    			system("cls");
+			}
+    		else if(input == 2)
+    		{
+    			return;
+			}
+		}
+	}
+}
+
+void output(Games_Database* pDatabase)
+{
+	int i = 1;
+	
+	pDatabase->mom = pDatabase->start;
+    //Print alle - letztes
+
+    //Wenn es keine Datensätze gibt
+    if(!pDatabase->mom)
+    {
+        printf("Erstell erst mal eine Datenbank\n");
+    }
+
+    //Es gibt nur eines
+    else if(!pDatabase->mom->danach)
+    {
+        //print mom
+        
+        Table_Design();
+        printf("%3d %30s %10s %12.2f %13s\n\n", i, pDatabase->mom->name, pDatabase->mom->konsole, pDatabase->mom->spielStunden, pDatabase->mom->completed);
+    }
+
+	else
+	{
+		//Mitte
+		Table_Design();
+    	while(pDatabase->mom->danach)
+    	{
+    	   	//print mom
+    	    printf("%3d %30s %10s %12.2f %13s\n\n", i, pDatabase->mom->name, pDatabase->mom->konsole, pDatabase->mom->spielStunden, pDatabase->mom->completed);
+    	    pDatabase->mom = pDatabase->mom->danach;
+    	    i++;
+    	}
+    	//Print Letztes (mom)
+    	printf("%3d %30s %10s %12.2f %13s\n\n", i, pDatabase->mom->name, pDatabase->mom->konsole, pDatabase->mom->spielStunden, pDatabase->mom->completed);
+	}
+}
+
+void Swap_Entries(Games_Database* pDatabase, int left, int right)
+{	
+	Game* tmp1;
+	Game* tmp2;
+
+	//Wenn es keine einträge gibt	
+	if(!pDatabase->start)
+	{
+		printf("Erstell erstmal eine Datenbank");
+		return;
+	}
+	
+	Set_Mom_To_Selected(pDatabase, right);
+	pDatabase->zwischen = pDatabase->mom;
+
+	Set_Mom_To_Selected(pDatabase, left);
+	
+	//If left and right is the same
+	if(left == right)
+	{
+		return;
+	}
+	
+	//if there is only one entry
+	else if(!pDatabase->start->danach && !pDatabase->start->davor)
+	{
+		printf("Wie willst du einen einzelnen Eintrag sortieren(-_-)\n");
+	}
+
+	//Left is first, Right is last
+	else if(!pDatabase->mom->davor && !pDatabase->zwischen->danach)
+	{	
+		//Left->danach == right
+		if(pDatabase->mom->danach == pDatabase->zwischen)
+		{
+			pDatabase->zwischen->davor  		= 0;
+			pDatabase->zwischen->danach 		= pDatabase->mom;
+			
+			pDatabase->mom->danach 				= 0;
+			pDatabase->mom->davor  				= pDatabase->zwischen;
+			
+			pDatabase->start 					= pDatabase->zwischen;
+		}
+		
+		else
+		{
+			pDatabase->mom->danach->davor  		= pDatabase->zwischen;
+			pDatabase->zwischen->davor->danach  = pDatabase->mom;
+		
+			pDatabase->zwischen->davor  		= 0;
+			pDatabase->zwischen->danach 		= pDatabase->mom;
+			
+			pDatabase->mom->danach 				= 0;
+			pDatabase->mom->davor  				= pDatabase->zwischen;
+			
+			pDatabase->start 					= pDatabase->zwischen;
+		}
+		
+	}
+
+	//Left is first
+	else if(!pDatabase->mom->davor)
+	{	
+		//Left->danach == right
+		if(pDatabase->mom->danach == pDatabase->zwischen)
+		{	
+			pDatabase->zwischen->danach->davor 	= pDatabase->mom;
+			
+			pDatabase->mom->davor  				= pDatabase->zwischen;
+			pDatabase->mom->danach 				= pDatabase->zwischen->danach;
+			
+			pDatabase->zwischen->danach 		= pDatabase->mom;
+			pDatabase->zwischen->davor  		= 0;
+		
+			pDatabase->start 					= pDatabase->zwischen;
+		}
+		
+		else
+		{
+			tmp1								= pDatabase->mom->danach;
+			
+			pDatabase->zwischen->danach->davor  = pDatabase->mom;
+			pDatabase->zwischen->davor->danach  = pDatabase->mom;
+			
+			pDatabase->mom->danach->davor 		= pDatabase->zwischen;
+			
+			pDatabase->mom->danach 				= pDatabase->zwischen->danach;
+			pDatabase->mom->davor 				= pDatabase->zwischen->davor;
+			
+			pDatabase->zwischen->danach			= tmp1;
+			pDatabase->zwischen->davor 			= 0;
+			
+			pDatabase->start 					= pDatabase->zwischen;
+		}
+		
+	}
+	//Right is last
+	else if(!pDatabase->zwischen->danach)
+	{
+		//Left->danach == right
+		if(pDatabase->mom->danach == pDatabase->zwischen)
+		{		
+			pDatabase->mom->davor->danach 		= pDatabase->zwischen;
+			
+			pDatabase->zwischen->davor 			= pDatabase->mom->davor;
+			pDatabase->zwischen->danach 		= pDatabase->mom;
+				
+			pDatabase->mom->davor 				= pDatabase->zwischen;
+			pDatabase->mom->danach 				= 0;
+		}
+		
+		else
+		{
+			tmp1								= pDatabase->zwischen->davor;
+				
+			pDatabase->mom->danach->davor   	= pDatabase->zwischen;
+			pDatabase->mom->davor->danach   	= pDatabase->zwischen;
+			
+			pDatabase->zwischen->davor->danach 	= pDatabase->mom;
+			
+			pDatabase->zwischen->danach 		= pDatabase->mom->danach;
+			pDatabase->zwischen->davor 			= pDatabase->mom->davor;
+			
+			pDatabase->mom->davor				= tmp1;
+			pDatabase->mom->danach 				= 0;
+		}
+	}
+	
+	
+	
+	//Nothing special
+	else
+	{
+		//Left->danach == right
+		if(pDatabase->mom->danach == pDatabase->zwischen)
+		{
+			pDatabase->mom->davor->danach 		= pDatabase->zwischen;
+			pDatabase->zwischen->danach->davor  = pDatabase->mom;
+			
+			pDatabase->mom->danach 				= pDatabase->zwischen->danach;
+			
+			pDatabase->zwischen->danach 		= pDatabase->mom;
+			pDatabase->zwischen->davor 			= pDatabase->mom->davor;
+			
+			pDatabase->mom->davor 				= pDatabase->zwischen;
+		}
+		
+		else
+		{
+			tmp1 = pDatabase->mom->davor;
+			tmp2 = pDatabase->mom->danach;
+			
+			pDatabase->mom->davor->danach 		= pDatabase->zwischen;
+			pDatabase->mom->danach->davor 		= pDatabase->zwischen;
+			
+			pDatabase->zwischen->davor->danach  = pDatabase->mom;
+			pDatabase->zwischen->danach->davor  = pDatabase->mom;
+			
+			pDatabase->mom->davor 				= pDatabase->zwischen->davor;
+			pDatabase->mom->danach 				= pDatabase->zwischen->danach;
+			
+			pDatabase->zwischen->davor 			= tmp1;
+			pDatabase->zwischen->danach 		= tmp2;
+		}
+	}
+}
+
+void Bubble_Sortieren(Games_Database* pDatabase, int length)
+{
+	int i, j, tmp;
+	
+	for(i = 0; i < length; i++)
+	{
+		pDatabase->mom = pDatabase->start;
+		
+		for(j = 0; j < length - i; j++)
+		{
+			Set_Mom_To_Selected(pDatabase, j);
+			
+			if(pDatabase->mom->spielStunden > pDatabase->mom->danach->spielStunden)
+			{
+				//Tausche j und j+1
+				Swap_Entries_Lite(pDatabase, j, j + 1);
+			}
+		}
+	}
+}
+
+void Swap_Entries_Lite(Games_Database* pDatabase, int left, int right)
+{	
+	Game* tmp1;
+	Game* tmp2;
+
+	//Wenn es keine einträge gibt	
+	if(!pDatabase->start)
+	{
+		printf("Erstell erstmal eine Datenbank");
+		return;
+	}
+
+	Set_Mom_To_Selected(pDatabase, right);
+	pDatabase->zwischen = pDatabase->mom;
+
+	Set_Mom_To_Selected(pDatabase, left);
+	
+	//if there is only one entry
+	if(!pDatabase->start->danach && !pDatabase->start->davor)
+	{
+		printf("Wie willst du einen einzelnen Eintrag sortieren(-_-)\n");
+	}
+
+	//Left is first, Right is last
+	else if(!pDatabase->mom->davor && !pDatabase->zwischen->danach)
+	{
+		pDatabase->zwischen->davor  = 0;
+		pDatabase->zwischen->danach = pDatabase->mom;
+		
+		pDatabase->mom->danach 		= 0;
+		pDatabase->mom->davor  		= pDatabase->zwischen;
+		
+		pDatabase->start 			= pDatabase->zwischen;
+	}
+
+	//Left is first
+	else if(!pDatabase->mom->davor)
+	{	
+		//Left->danach == right
+		if(pDatabase->mom->danach == pDatabase->zwischen)
+		{
+			pDatabase->zwischen->danach->davor 			= pDatabase->mom;
+			
+			pDatabase->mom->davor  				= pDatabase->zwischen;
+			pDatabase->mom->danach 				= pDatabase->zwischen->danach;
+			
+			pDatabase->zwischen->danach 		= pDatabase->mom;
+			pDatabase->zwischen->davor  		= 0;
+		
+			pDatabase->start 					= pDatabase->zwischen;
+		}
+	}
+	//Right is last
+	else if(!pDatabase->zwischen->danach)
+	{
+		
+		//Left->danach == right
+		if(pDatabase->mom->danach == pDatabase->zwischen)
+		{		
+			pDatabase->mom->davor->danach 		= pDatabase->zwischen;
+			
+			pDatabase->zwischen->davor 			= pDatabase->mom->davor;
+			pDatabase->zwischen->danach 		= pDatabase->mom;
+				
+			pDatabase->mom->davor 				= pDatabase->zwischen;
+			pDatabase->mom->danach 				= 0;
+		}
+	}
+	
+	
+	
+	//Nothing special
+	else
+	{
+		//Left->danach == right
+		if(pDatabase->mom->danach == pDatabase->zwischen)
+		{
+			pDatabase->mom->davor->danach 		= pDatabase->zwischen;
+			pDatabase->zwischen->danach->davor  = pDatabase->mom;
+			
+			pDatabase->mom->danach 				= pDatabase->zwischen->danach;
+			
+			pDatabase->zwischen->danach 		= pDatabase->mom;
+			pDatabase->zwischen->davor 			= pDatabase->mom->davor;
+			
+			pDatabase->mom->davor 				= pDatabase->zwischen;
+		}
+	}
+}
+
+void Bubble_Sortieren_Namen(Games_Database* pDatabase, int length, char category[20 + 1])
+{
+	int i, j, tmp;
+	if(strcmp(category, "Platform") == 0)
+	{
+		for(i = 0; i < length; i++)
+		{
+			pDatabase->mom = pDatabase->start;
+		
+			for(j = 0; j < length - i; j++)
+			{
+				Set_Mom_To_Selected(pDatabase, j);
+			
+				if(strcmp(pDatabase->mom->konsole, pDatabase->mom->danach->konsole) > 0)
+				{
+					//Tausche j und j+1
+					Swap_Entries_Lite(pDatabase, j, j + 1);
+				}
+			}
+		}
+	}
+	
+	else if(strcmp(category, "Name") == 0)
+	{
+		for(i = 0; i < length; i++)
+		{
+			pDatabase->mom = pDatabase->start;
+		
+			for(j = 0; j < length - i; j++)
+			{
+				Set_Mom_To_Selected(pDatabase, j);
+			
+				if(strcmp(pDatabase->mom->name, pDatabase->mom->danach->name) > 0)
+				{
+					//Tausche j und j+1
+					Swap_Entries_Lite(pDatabase, j, j + 1);
+				}
+			}
+		}
+	}
+}
+
 
